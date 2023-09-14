@@ -8,8 +8,8 @@ public:
     affichage();
     int accueil();
 private:
-
-    void navigation(int choix);
+    int option;
+    void navigation();
 };
 
 #endif // AFFICHAGE_H

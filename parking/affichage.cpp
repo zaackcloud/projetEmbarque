@@ -1,6 +1,7 @@
 #include "affichage.h"
 #include <iostream>
 
+
 using namespace std;
 
 affichage::affichage()
@@ -10,18 +11,20 @@ affichage::affichage()
 
 int affichage::accueil()
 {
-    char* choix;
-    cout<<"bienvenue sur le projet MEL'Parking"<<endl;
+    this->option=0;
+    cout<<"Bienvenue sur le projet MEL'Parking"<<endl;
     cout<<"1: afficher les places restantes dans un parking"<<endl;
     cout<<"2: afficher les parkings fermés"<<endl;
     cout<<"3: créer un graphique d'affluence d'un parking"<<endl;
     cout<<"4: retour"<<endl;
-    cin>>choix;
-    return atoi(choix);
+    cin >> this->option;
+    navigation();
+    return option;
 }
 
-void affichage::navigation(int choix)
+void affichage::navigation()
 {
+    int choix= this->option;
     switch(choix)
     {
     case 1:
@@ -33,6 +36,7 @@ void affichage::navigation(int choix)
     case 4:
         return;
     default:
+        cout<< "erreur: option invalide";
         accueil();
     }
 }
