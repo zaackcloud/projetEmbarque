@@ -4,8 +4,16 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        affichage.cpp \
+        datamanager.cpp \
+        graphics.cpp \
+        init.cpp \
         main.cpp
 
 HEADERS += \
-    affichage.h
+    datamanager.h \
+    graphics.h \
+    init.h
+
+unix|win32: LIBS += -lcurl
+unix|win32: LIBS += -lgd
+
