@@ -62,14 +62,14 @@ void Graphics::createNewGraphic(const string &filename)
         trunkHeight = min(trunkHeight, MAX_TRUNK_HEIGHT);
         int R = rand() % 255;
         int G = rand() % 255;
-        int B = rand() % 255;
+          int B = rand() % 255;
         int color = gdImageColorAllocate(im, R, G, B);
 
-        int bottom_space = MAX_TRUNK_HEIGHT - trunkHeight;
-        int BGR = std::max(0, R - 10);
-        int BGG = std::max(0, G - 10);
-        int BGB = std::max(0, B - 10);
-        int backGroundColor = gdImageColorAllocate(im, BGR, BGG, BGB);
+//        int bottom_space = MAX_TRUNK_HEIGHT - trunkHeight;
+//        int BGR = std::max(0, R - 10);
+//        int BGG = std::max(0, G - 10);
+//        int BGB = std::max(0, B - 10);
+//        int backGroundColor = gdImageColorAllocate(im, BGR, BGG, BGB);
 
         if (percent >= 90) { // Si le pourcentage du parking est supérieur ou égal à 90%
 

@@ -27,13 +27,13 @@ void DataManager::downloadData()
                curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
                curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
                res = curl_easy_perform(curl);
-
+               fclose(file);
         if (res != CURLE_OK){
             cerr<<"Download error :"<<curl_easy_strerror(res)<<endl;
         }
     }
     curl_easy_cleanup(curl);
-    fclose(file);
+
 }
 
 vector<string> DataManager::getNames() const
