@@ -9,7 +9,7 @@ DataManager::DataManager()
 
 void DataManager::getData()
 {
-    downloadData();
+
     manageHistory();
 }
 
@@ -33,7 +33,6 @@ void DataManager::downloadData()
         }
     }
     curl_easy_cleanup(curl);
-
 }
 
 vector<string> DataManager::getNames() const
@@ -50,24 +49,24 @@ vector<string> DataManager::getNames() const
 void DataManager::manageHistory()
 {
     downloadData();
-       cout << "Téléchargement terminé avec libcurl. Le fichier " << localsave << " a été enregistré localement." << endl;
+       cout << "Download complete. File : " << localsave << " has been saved localy." << endl;
 
        ifstream jsonFile(localsave);
        json data_obj;
        jsonFile >> data_obj;
 
-       //Obtention de la date et de l'heure actuelles
+
        time_t temps = time(nullptr);
        tm* now = localtime(&temps);
        stringstream chaine_date, chaine_heure;
 
-       //Formatage de la date
+
        chaine_date << setw(4) << setfill('0') << (1900 + now->tm_year) << "-"
                   << setw(2) << setfill('0') << (now->tm_mon + 1) << "-"
                   << setw(2) << setfill('0') << now->tm_mday;
        string dateStr = chaine_date.str();
 
-       //Formatage de l'heure
+
        chaine_heure << setw(2) << setfill('0') << now->tm_hour << ":"
                    << setw(2) << setfill('0') << now->tm_min << ":"
                    << setw(2) << setfill('0') << now->tm_sec;

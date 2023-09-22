@@ -32,71 +32,60 @@ void Graphics::createNewGraphic(const string &filename)
                     available.push_back(availableValue);
                     full.push_back(fullValue);
 
-//                } else {
-//                    cerr << "wrong data set: " << parking << endl;
-//                }
+                } else {
+                    cerr << "wrong data set: " << parking << endl;
+                }
             }
             cout<<PnameValue<<endl;
         }
 
         file.close();
-    }
+
 
 
     const int width = 1600;
-    const int height = 600;
+    const int height = 1000;
     const int trunkWidth = width / names.size();
     const int MAX_TRUNK_HEIGHT = height - 20;
-
+    int labelincrement=1;
     gdImagePtr im = gdImageCreateTrueColor(width, height);
     int white = gdImageColorAllocate(im, 255, 255, 255);
     gdImageFill(im, 0, 0, white);
 
     int black = gdImageColorAllocate(im, 0, 0, 0);
+    int grey = gdImageColorAllocate(im, 200, 200, 200);
+    gdImageLine(im, 0,height/2, width, height/2,grey );
+    gdImageLine(im, 0,height, width, height,black );
+    gdImageDashedLine(im, 0,3*height/4, width, 3*height/4,grey );
+    gdImageDashedLine(im, 0,height/4, width, height/4,grey );
 
-    //Dessin des barres de l'histogramme
     for (size_t i = 0; i < available.size(); i++) {
+
         int percent = (100 * available[i]) / full[i];
         int trunkHeight = (height * percent) / 100;
-        const int RELIEF_OFFSET = 10;
+        const int margin = 10;
         trunkHeight = min(trunkHeight, MAX_TRUNK_HEIGHT);
         int R = rand() % 255;
         int G = rand() % 255;
-          int B = rand() % 255;
+        int B = rand() % 255;
         int color = gdImageColorAllocate(im, R, G, B);
+        gdImageLine(im,i*trunkWidth - margin/2,0,i*trunkWidth - margin/2,height,grey );
 
-//        int bottom_space = MAX_TRUNK_HEIGHT - trunkHeight;
-//        int BGR = std::max(0, R - 10);
-//        int BGG = std::max(0, G - 10);
-//        int BGB = std::max(0, B - 10);
-//        int backGroundColor = gdImageColorAllocate(im, BGR, BGG, BGB);
-
-        if (percent >= 90) { // Si le pourcentage du parking est supérieur ou égal à 90%
-
-            string label = names[i] + " (" + to_string(percent) + "%)";
-            gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, height - trunkHeight - 15, (unsigned char*)label.c_str(), black);
+        string percentLabel =to_string(percent)+"%";
+        string label = names[i];
+        gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * percentLabel.length()) / 2, height - trunkHeight - 15, (unsigned char*)percentLabel.c_str(), black);
+        if (labelincrement%3 ==0) {
+            gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 30, (unsigned char*)label.c_str(), black);
+            labelincrement=1;
+        } else if(labelincrement%2 == 0) {
+            gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 15, (unsigned char*)label.c_str(), black);
+            labelincrement=3;
         } else {
-            //Dessine le pourcentage au-dessus de la barre
-            string percentLabel = "("+to_string(percent) + "%)";
-            gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * percentLabel.length()) / 2, height - trunkHeight - 15, (unsigned char*)percentLabel.c_str(), black);
-
-//            //Dessine le nom du parking en cascade en utilisant split_into_lines
-//            auto lines = split_into_lines(noms[i], bar_width, gdFontGetSmall());
-//            std::reverse(lines.begin(), lines.end());
-//            int offsetY = 0;
-//            for (const auto& line : lines) {
-//                gdImageString(im, gdFontGetSmall(), i * bar_width + (bar_width - gdFontGetSmall()->w * line.length()) / 2, image_height - bar_height - 30 - offsetY, (unsigned char*)line.c_str(), black);
-//                offsetY += gdFontGetSmall()->h + 2;  // Ajuste l'espacement entre les lignes
-//            }
+            gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 0, (unsigned char*)label.c_str(), black);
+            labelincrement=2;
         }
 
-        // Dessine le rectangle principal
-        gdImageFilledRectangle(im, i * trunkWidth, height - trunkHeight, (i + 1) * trunkWidth - RELIEF_OFFSET, height, color);
-
-//        //On dessine le relief 3D
-//        for (int offset = 1; offset <= RELIEF_OFFSET; offset++) {
-//            gdImageFilledRectangle(im, (i + 1) * trunkWidth - offset, height - trunkHeight - offset + RELIEF_OFFSET, (i + 1) * trunkWidth - offset + 1, image_height - offset + RELIEF_OFFSET, color_relief);
-//        }
+        gdImageFilledRectangle(im, i * trunkWidth, height - trunkHeight, (i + 1) * trunkWidth - margin, height, color);
     }
 
     FILE* out = fopen(filename.c_str(), "wb");

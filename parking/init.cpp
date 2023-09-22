@@ -5,8 +5,7 @@ init::init()
 
 }
 
-
-bool init::createNewDirectory(char* directory) {
+bool init::createNewDirectory(const char *directory) {
     if (stat(directory, &info) != 0) {
         cout << "Creating directory : " << directory << endl;
         if (mkdir(directory, 0755) == 0) {
@@ -21,5 +20,16 @@ bool init::createNewDirectory(char* directory) {
     } else {
         cerr << "Error: " << directory << " is not a directory." << endl;
         return false;
+    }
+}
+
+void init::cooldown()
+{
+    for (int i = 900; i > 0; --i) {
+
+        int minutes = i / 60;
+        int seconds = i % 60;
+        cout << "\rNext update in -> " << minutes << " : " << seconds << flush;
+        this_thread::sleep_for(std::chrono::seconds(1));
     }
 }

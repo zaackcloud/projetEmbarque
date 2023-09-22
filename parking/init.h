@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <sys/stat.h>
+#include <thread>
 using namespace std;
 
 
@@ -11,8 +12,10 @@ class init
 {
 public:
     init();
-    char* dir;
-    bool createNewDirectory(char* dir);
+    char const *dirImage="ImagesPNG";
+    char const *dirData="Data";
+    bool createNewDirectory(const char* dir);
+    void cooldown();
 
 };
 
