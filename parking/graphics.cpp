@@ -10,9 +10,11 @@ void Graphics::createNewGraphic(const string &filename)
     vector<string> names;
     vector<int> available;
     vector<int> full;
+    vector<string> state;
     string PnameValue;
     int availableValue;
     int fullValue;
+    string stateValue;
 
 
     ifstream file("parkings.json");
@@ -27,10 +29,12 @@ void Graphics::createNewGraphic(const string &filename)
                     PnameValue = parking["libelle"].get<string>();
                     availableValue = parking["dispo"].get<int>();
                     fullValue = parking["max"].get<int>();
+                    stateValue = parking["etat"].get<string>();
 
                     names.push_back(PnameValue);
                     available.push_back(availableValue);
                     full.push_back(fullValue);
+                    state.push_back(stateValue);
 
                 } else {
                     cerr << "wrong data set: " << parking << endl;
@@ -45,6 +49,7 @@ void Graphics::createNewGraphic(const string &filename)
 
     const int width = 1600;
     const int height = 1000;
+    const int infoWidth = 250;
     const int trunkWidth = width / names.size();
     const int MAX_TRUNK_HEIGHT = height - 20;
     int labelincrement=1;
@@ -54,14 +59,18 @@ void Graphics::createNewGraphic(const string &filename)
 
     int black = gdImageColorAllocate(im, 0, 0, 0);
     int grey = gdImageColorAllocate(im, 200, 200, 200);
-    gdImageLine(im, 0,height/2, width, height/2,grey );
-    gdImageLine(im, 0,height, width, height,black );
-    gdImageDashedLine(im, 0,3*height/4, width, 3*height/4,grey );
-    gdImageDashedLine(im, 0,height/4, width, height/4,grey );
-
+    gdImageLine(im,infoWidth,height/2, infoWidth+ width, height/2,grey );
+    gdImageLine(im, infoWidth,0, infoWidth, height,black );
+    gdImageDashedLine(im, infoWidth,3*height/4,infoWidth+ width, 3*height/4,grey );
+    gdImageDashedLine(im, infoWidth,height/4, infoWidth+ width, height/4,grey );
+    string titre = "Liste des parkings FERMES";
+    gdImageString(im, gdFontGetSmall(), (infoWidth - gdFontGetSmall()->w * titre.length()) / 2, 30, (unsigned char*)titre.c_str(), black);
     for (size_t i = 0; i < available.size(); i++) {
 
-        int percent = (100 * available[i]) / full[i];
+        if(state[i]=="OUVERT"){
+
+        static int j =0;
+        int percent =100 - (100 * available[i]) / full[i];
         int trunkHeight = (height * percent) / 100;
         const int margin = 10;
         trunkHeight = min(trunkHeight, MAX_TRUNK_HEIGHT);
@@ -69,23 +78,28 @@ void Graphics::createNewGraphic(const string &filename)
         int G = rand() % 255;
         int B = rand() % 255;
         int color = gdImageColorAllocate(im, R, G, B);
-        gdImageLine(im,i*trunkWidth - margin/2,0,i*trunkWidth - margin/2,height,grey );
+        gdImageLine(im,infoWidth+j*trunkWidth - margin/2,0,infoWidth+j*trunkWidth - margin/2,height,grey );
 
         string percentLabel =to_string(percent)+"%";
         string label = names[i];
-        gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * percentLabel.length()) / 2, height - trunkHeight - 15, (unsigned char*)percentLabel.c_str(), black);
+        gdImageString(im, gdFontGetSmall(),infoWidth+ j * trunkWidth + (trunkWidth - gdFontGetSmall()->w * percentLabel.length()) / 2, height - trunkHeight - 15, (unsigned char*)percentLabel.c_str(), black);
         if (labelincrement%3 ==0) {
-            gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 30, (unsigned char*)label.c_str(), black);
+            gdImageString(im, gdFontGetSmall(),infoWidth+ j * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 30, (unsigned char*)label.c_str(), black);
             labelincrement=1;
         } else if(labelincrement%2 == 0) {
-            gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 15, (unsigned char*)label.c_str(), black);
+            gdImageString(im, gdFontGetSmall(),infoWidth+ j * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 15, (unsigned char*)label.c_str(), black);
             labelincrement=3;
         } else {
-            gdImageString(im, gdFontGetSmall(), i * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 0, (unsigned char*)label.c_str(), black);
+            gdImageString(im, gdFontGetSmall(),infoWidth+ j * trunkWidth + (trunkWidth - gdFontGetSmall()->w * label.length()) / 2, 0, (unsigned char*)label.c_str(), black);
             labelincrement=2;
         }
 
-        gdImageFilledRectangle(im, i * trunkWidth, height - trunkHeight, (i + 1) * trunkWidth - margin, height, color);
+        gdImageFilledRectangle(im,infoWidth+ j * trunkWidth, height - trunkHeight,infoWidth+(j + 1) * trunkWidth - margin, height, color);
+        j++;
+        }else{
+            string label = names[i];
+            gdImageString(im, gdFontGetSmall(), (infoWidth - gdFontGetSmall()->w * label.length()) / 2, i*30, (unsigned char*)label.c_str(), black);
+        }
     }
 
     FILE* out = fopen(filename.c_str(), "wb");

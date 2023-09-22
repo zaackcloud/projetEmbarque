@@ -19,12 +19,14 @@ namespace fs = std::filesystem;
 struct Entry{
     int Available;
     int Full;
+    string State;
     std::string timestamp;
 
     Entry(const nlohmann::json& jsonData) {
 
             Available = jsonData["dispo"].get<int>();
             Full = jsonData["max"].get<int>();
+            State = jsonData["etat"].get<string>();
             timestamp = jsonData["timestamp"].get<std::string>();
         }
 };

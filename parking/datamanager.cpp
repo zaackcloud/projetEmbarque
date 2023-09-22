@@ -1,7 +1,5 @@
 #include "datamanager.h"
 
-using namespace std;
-
 DataManager::DataManager()
 {
 
@@ -26,6 +24,7 @@ void DataManager::downloadData()
         file = fopen(localsave.c_str(), "wb");
                curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
                curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+               curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
                res = curl_easy_perform(curl);
                fclose(file);
         if (res != CURLE_OK){
@@ -92,6 +91,11 @@ void DataManager::manageHistory()
                } else {
                    parkingData["max"] = 1;
                }
+               if (element.contains("etat")) {
+                   parkingData["etat"] = element["etat"].get<string>();
+               } else {
+                   parkingData["etat"] = "Null";
+               }
 
                parkingData["timestamp"] = timestamp;
 
@@ -121,6 +125,7 @@ void DataManager::manageHistory()
 
                    historicalDataJSON["dispo"] = data.Available;
                    historicalDataJSON["max"] = data.Full;
+                   historicalDataJSON["etat"] = data.State;
                    historicalDataJSON["timestamp"] = data.timestamp;
 
                    j.push_back(historicalDataJSON); // Ajoute l'objet JSON à l'objet JSON principal
